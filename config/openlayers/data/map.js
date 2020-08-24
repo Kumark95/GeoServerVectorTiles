@@ -72,6 +72,10 @@ switch (active_layer_protocol) {
         loadWMTSLayer();
         break;
 
+    case "WFS":
+        loadWFSLayer();
+        break;
+
     case "VectorTile":
         loadVectorTileLayer();
         break;
@@ -133,6 +137,31 @@ function loadWMTSLayer() {
         .catch((error) => {
             console.error('Error:', error);
         });
+}
+
+
+////////////////////////////////////////////////////////////////////////
+// WFS layer
+////////////////////////////////////////////////////////////////////////
+
+function loadWFSLayer() {
+    const wfs_url = "https://geoserver.vm.local/geoserver/rasterdata/wfs";
+    const vector_source = new ol.source.Vector({
+        format: new ol.format.GeoJSON(),
+        url: function(extent) {
+            return wfs_url +
+                '?service=WFS&' +
+                `version=2.0.0&request=GetFeature&typename=${layer_name}&`+
+                'outputFormat=application/json';
+        }
+    });
+
+    const layer = new ol.layer.Vector({
+        style: vectorStyle,
+        source: vector_source
+    });
+
+    map.addLayer(layer);
 }
 
 
