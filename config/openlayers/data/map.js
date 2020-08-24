@@ -117,17 +117,17 @@ function loadWMTSLayer() {
         })
         .then((text) => {
             const capabilities = capabilities_parser.read(text);
-            
+
             const options = ol.source.WMTS.optionsFromCapabilities(capabilities, {
                 layer: layer_name,
                 matrixSet: matrix_set,
                 format: 'image/png'
             });
-        
+
             const layer = new ol.layer.Tile({
                 source: new ol.source.WMTS(options)
             });
-        
+
             map.addLayer(layer);
         })
         .catch((error) => {
@@ -156,23 +156,28 @@ function vectorStyle(feature) {
             src: src_img,
         }),
     });
-    
+
     return  img_style;
 }
 
 function loadVectorTileLayer() {
     const layer = new ol.layer.VectorTile({
         style: vectorStyle,
+        //renderBuffer: 1500,
         //declutter: true,
         source: new ol.source.VectorTile({
-            //overlaps: false,
-            // tilePixelRatio: 1,
             tileGrid: ol.tilegrid.createXYZ({maxZoom: 19}),
+
+            // format: new ol.format.TopoJSON(),
+            // url: `https://geoserver.vm.local/gwc/service/tms/1.0.0/${layer_name}@${matrix_set}@topojson/{z}/{x}/{-y}.topojson`,
+
+            // format: new ol.format.GeoJSON(),
+            // url: `https://geoserver.vm.local/gwc/service/tms/1.0.0/${layer_name}@${matrix_set}@geojson/{z}/{x}/{-y}.geojson`,
+
             format: new ol.format.MVT(),
             url: `https://geoserver.vm.local/gwc/service/tms/1.0.0/${layer_name}@${matrix_set}@pbf/{z}/{x}/{-y}.pbf`,
         }),
     });
-    
+
     map.addLayer(layer);
 }
-
